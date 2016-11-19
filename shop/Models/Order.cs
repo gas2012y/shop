@@ -13,6 +13,7 @@ namespace shop.Models
         public List<OrderPosition> OrderPositions { get; set; }
         public Customer Customer { get; set; }
         public int CustomerId { get; set; }
+        public bool IsCurrent { get; set; }
 
     }
 }

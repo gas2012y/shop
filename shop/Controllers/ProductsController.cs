@@ -16,10 +16,53 @@ namespace shop.Controllers
         private ShopContext db = new ShopContext();
 
         // GET: Products
-        public ActionResult Index()
+        public ActionResult Index(string search)
         {
+
             var products = db.Products.Include(p => p.Category);
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                products = products.Where(x => x.Name.Contains(search));
+            }
             return View(products.ToList());
+        }
+
+        public ActionResult addToCart(int id)
+        {
+
+            var product = db.Products.FirstOrDefault(x => x.Id == id);
+            var currentOrder = db.Orders.Include(x => x.OrderPositions).FirstOrDefault(x => x.IsCurrent);
+            if (currentOrder == null)
+            {
+                currentOrder = new Order()
+                {
+                    Customer = db.Customers.FirstOrDefault(),
+                    IsCurrent = true,
+                    OrderPositions = new List<OrderPosition>()
+                    {
+                        new OrderPosition() {Count = 1, Product = product}
+                    }
+                };
+
+                db.Orders.Add(currentOrder);
+                db.SaveChanges();
+            }
+            else
+            {
+                var orderPosition = currentOrder.OrderPositions.FirstOrDefault(x => x.Product == product);
+                if (orderPosition != null)
+                    orderPosition.Count++;
+                else
+                {
+                    currentOrder.OrderPositions.Add(
+                        new OrderPosition() { Count = 1, Product = product });
+                }
+                db.SaveChanges();
+            }
+
+
+            return RedirectToAction("Edit", "Orders", new { id = currentOrder.Id });
+            //return RedirectToRoute("cartIndex", new {id = currentOrder.Id});
         }
 
         // GET: Products/Details/5
@@ -40,7 +83,7 @@ namespace shop.Controllers
         // GET: Products/Create
         public ActionResult Create()
         {
-            ViewBag.CategoryId = new SelectList(db.Categories, "id", "name");
+            ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name");
             return View();
         }
 
@@ -49,7 +92,7 @@ namespace shop.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,CategoryId,Name,Price,Description")] Product product)
+        public ActionResult Create([Bind(Include = "Id,CategoryId,Name,Count,Price,Description")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -58,7 +101,7 @@ namespace shop.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CategoryId = new SelectList(db.Categories, "id", "name", product.CategoryId);
+            ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", product.CategoryId);
             return View(product);
         }
 
@@ -74,7 +117,7 @@ namespace shop.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.CategoryId = new SelectList(db.Categories, "id", "name", product.CategoryId);
+            ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", product.CategoryId);
             return View(product);
         }
 
@@ -83,7 +126,7 @@ namespace shop.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,CategoryId,Name,Price,Description")] Product product)
+        public ActionResult Edit([Bind(Include = "Id,CategoryId,Name,Count,Price,Description")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -91,7 +134,7 @@ namespace shop.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.CategoryId = new SelectList(db.Categories, "id", "name", product.CategoryId);
+            ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", product.CategoryId);
             return View(product);
         }
 

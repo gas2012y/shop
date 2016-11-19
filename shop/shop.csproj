@@ -200,7 +200,6 @@
     <Compile Include="Controllers\CustomersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="Controllers\OrderPositionsController.cs" />
     <Compile Include="Controllers\OrdersController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="DataAcess\Mappings\CustomerMap.cs" />
@@ -286,11 +285,6 @@
     <Content Include="Views\Products\Details.cshtml" />
     <Content Include="Views\Products\Edit.cshtml" />
     <Content Include="Views\Products\Index.cshtml" />
-    <Content Include="Views\OrderPositions\Create.cshtml" />
-    <Content Include="Views\OrderPositions\Delete.cshtml" />
-    <Content Include="Views\OrderPositions\Details.cshtml" />
-    <Content Include="Views\OrderPositions\Edit.cshtml" />
-    <Content Include="Views\OrderPositions\Index.cshtml" />
     <Content Include="Views\Orders\Create.cshtml" />
     <Content Include="Views\Orders\Delete.cshtml" />
     <Content Include="Views\Orders\Details.cshtml" />
